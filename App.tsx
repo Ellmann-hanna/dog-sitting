@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Phone, Mail, MapPin, Star, Heart, Clock, Home,
   CheckCircle, Moon, Menu, X, ChevronDown, PawPrint, Shield, Leaf,
+  MessageSquare,
 } from 'lucide-react';
 
 // ─── Image URLs (Unsplash) ────────────────────────────────────────────────────
 const IMG = {
   hero:      'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1920&auto=format&fit=crop&q=85',
-  about:     'https://images.unsplash.com/photo-1576201836106-db1758f5b6f3?w=900&auto=format&fit=crop&q=80',
+  about:     'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&auto=format&fit=crop&q=80',
   dog1:      'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=700&auto=format&fit=crop&q=80',
-  dog2:      'https://images.unsplash.com/photo-1534361960057-19f4434a956d?w=700&auto=format&fit=crop&q=80',
-  dog3:      'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=700&auto=format&fit=crop&q=80',
-  dog4:      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&auto=format&fit=crop&q=80',
-  dog5:      'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=700&auto=format&fit=crop&q=80',
-  dog6:      'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?w=700&auto=format&fit=crop&q=80',
-  community: 'https://images.unsplash.com/photo-1449034446853-66c86144b0ad?w=1200&auto=format&fit=crop&q=80',
+  dog2:      'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=700&auto=format&fit=crop&q=80',
+  dog3:      'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=700&auto=format&fit=crop&q=80',
+  dog4:      'https://images.unsplash.com/photo-1552053831-71594a27632d?w=700&auto=format&fit=crop&q=80',
+  dog5:      'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=700&auto=format&fit=crop&q=80',
+  dog6:      'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=700&auto=format&fit=crop&q=80',
+  community: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&auto=format&fit=crop&q=80',
 };
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
@@ -495,8 +496,8 @@ type FormState = {
 };
 
 const CONTACT_INFO = [
-  { Icon: Phone,  label: 'Phone',               value: '(925) 555-0142',        href: 'tel:+19255550142' },
-  { Icon: Mail,   label: 'Email',               value: 'hello@danvilledoggy.com', href: 'mailto:hello@danvilledoggy.com' },
+  { Icon: Phone,  label: 'Phone',               value: '510-375-5744',            href: 'tel:+15103755744' },
+  { Icon: Mail,   label: 'Email',               value: 'hanguohong111@gmail.com',  href: 'mailto:hanguohong111@gmail.com' },
   { Icon: MapPin, label: 'Location',            value: 'Danville, CA 94526',    href: null },
   { Icon: Clock,  label: 'Check-in / Check-out', value: '8 AM – 6 PM, 7 days a week', href: null },
 ];
@@ -510,15 +511,49 @@ const FORM_FIELDS: { label: string; key: keyof FormState; placeholder: string; t
   { label: 'Dates Needed', key: 'dates',   placeholder: 'May 15 – May 18',  type: 'text'  },
 ];
 
+const FORMSPREE_URL = 'https://formspree.io/f/xreryrrb';
+
 const Contact: React.FC = () => {
   const [form, setForm] = useState<FormState>({
     name: '', email: '', phone: '', dogName: '', breed: '', dates: '', message: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const set = (key: keyof FormState) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setForm(f => ({ ...f, [key]: e.target.value }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch(FORMSPREE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          dogName: form.dogName,
+          breed: form.breed,
+          dates: form.dates,
+          message: form.message,
+        }),
+      });
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        setError('Something went wrong. Please try again or email us directly.');
+      }
+    } catch {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section id="contact" className="py-24 md:py-32 bg-amber-50">
@@ -598,7 +633,7 @@ const Contact: React.FC = () => {
               </div>
             ) : (
               <form
-                onSubmit={e => { e.preventDefault(); setSubmitted(true); }}
+                onSubmit={handleSubmit}
                 className="bg-white rounded-3xl p-8 shadow-sm space-y-5"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -631,11 +666,15 @@ const Contact: React.FC = () => {
                   />
                 </div>
 
+                {error && (
+                  <p className="text-red-500 text-sm text-center">{error}</p>
+                )}
                 <button
                   type="submit"
-                  className="w-full bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-2xl font-bold text-lg transition-all hover:shadow-lg"
+                  disabled={loading}
+                  className="w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white py-4 rounded-2xl font-bold text-lg transition-all hover:shadow-lg"
                 >
-                  Send Message & Check Availability
+                  {loading ? 'Sending…' : 'Send Message & Check Availability'}
                 </button>
               </form>
             )}
@@ -682,6 +721,152 @@ const Footer: React.FC = () => (
   </footer>
 );
 
+// ─── Chat Widget ──────────────────────────────────────────────────────────────
+type ChatMessage = { role: 'user' | 'assistant'; content: string; link?: string; linkLabel?: string };
+
+const STARTERS = [
+  {
+    q: "What's the overnight rate?",
+    a: "Our standard rate is $70/night per dog, with a $10 discount for a second dog from the same family. Check-in and check-out is 8 AM – 6 PM, 7 days a week.",
+    link: '#pricing',
+    linkLabel: 'See full pricing',
+  },
+  {
+    q: "How many dogs do you accept?",
+    a: "We accept a maximum of 3 dogs at a time — keeping it small and cozy so every pup gets personal attention in a real home environment. No kennels!",
+    link: '#about',
+    linkLabel: 'Learn more about us',
+  },
+  {
+    q: "What's included in the stay?",
+    a: "Every stay includes 3 daily walks, meals, a cozy sleeping spot inside our home, secure fenced yard time, and daily photo & text updates to you.",
+    link: '#services',
+    linkLabel: 'See all services',
+  },
+  {
+    q: "How do I book?",
+    a: "Just fill out our contact form and we'll get back to you within 24 hours to confirm availability. You can also call or email us directly!",
+    link: '#contact',
+    linkLabel: 'Go to booking form',
+  },
+];
+
+const ChatWidget: React.FC = () => {
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [asked, setAsked] = useState<Set<string>>(new Set());
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const handleStarter = (s: typeof STARTERS[number]) => {
+    setMessages(m => [
+      ...m,
+      { role: 'user', content: s.q },
+      { role: 'assistant', content: s.a, link: s.link, linkLabel: s.linkLabel },
+    ]);
+    setAsked(prev => new Set(prev).add(s.q));
+  };
+
+  const remaining = STARTERS.filter(s => !asked.has(s.q));
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+      {/* Chat window */}
+      {open && (
+        <div className="mb-4 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-stone-200 flex flex-col overflow-hidden" style={{ height: '500px' }}>
+          {/* Header */}
+          <div className="bg-amber-500 px-5 py-4 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center">
+                <PawPrint size={18} className="text-white" />
+              </div>
+              <div>
+                <div className="text-white font-bold text-sm">Danville Doggy</div>
+                <div className="text-amber-100 text-xs flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-green-300 rounded-full inline-block" />
+                  Here to help!
+                </div>
+              </div>
+            </div>
+            <button onClick={() => setOpen(false)} className="text-white/70 hover:text-white transition-colors">
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {/* Greeting */}
+            <div className="bg-amber-50 border border-amber-100 rounded-2xl rounded-tl-sm p-3 text-stone-700 text-sm leading-relaxed">
+              Hi there! 🐾 I'm here to help answer questions about our dog boarding service. What would you like to know?
+            </div>
+
+            {/* Conversation */}
+            {messages.map((m, i) => (
+              <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                  m.role === 'user'
+                    ? 'bg-amber-500 text-white rounded-br-sm'
+                    : 'bg-stone-100 text-stone-700 rounded-bl-sm'
+                }`}>
+                  {m.content}
+                  {m.link && (
+                    <a
+                      href={m.link}
+                      onClick={() => setOpen(false)}
+                      className="block mt-2 text-amber-600 font-semibold text-xs hover:underline"
+                    >
+                      {m.linkLabel} →
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {/* Remaining starter questions */}
+            {remaining.length > 0 && (
+              <div className="space-y-2 pt-1">
+                {remaining.map(s => (
+                  <button
+                    key={s.q}
+                    onClick={() => handleStarter(s)}
+                    className="w-full text-left text-sm px-3 py-2.5 border border-amber-200 rounded-xl text-amber-700 hover:bg-amber-50 transition-colors"
+                  >
+                    {s.q}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div ref={bottomRef} />
+          </div>
+
+          {/* Footer */}
+          <div className="px-4 py-3 border-t border-stone-100 bg-stone-50 shrink-0 text-center">
+            <p className="text-xs text-stone-500">
+              More questions?{' '}
+              <a href="tel:+15103755744" className="text-amber-600 font-semibold hover:underline">Call us</a>
+              {' or '}
+              <a href="#contact" onClick={() => setOpen(false)} className="text-amber-600 font-semibold hover:underline">send a message</a>
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Toggle button */}
+      <button
+        onClick={() => setOpen(p => !p)}
+        className="w-14 h-14 bg-amber-500 hover:bg-amber-600 text-white rounded-full shadow-xl hover:shadow-2xl transition-all flex items-center justify-center"
+        aria-label="Open chat"
+      >
+        {open ? <X size={22} /> : <MessageSquare size={22} />}
+      </button>
+    </div>
+  );
+};
+
 // ─── Root ─────────────────────────────────────────────────────────────────────
 const App: React.FC = () => (
   <div className="font-sans">
@@ -694,6 +879,7 @@ const App: React.FC = () => (
     <Community />
     <Contact />
     <Footer />
+    <ChatWidget />
   </div>
 );
 
