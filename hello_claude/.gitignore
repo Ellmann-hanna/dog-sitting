@@ -1,0 +1,34 @@
+# Ignore bundled gems
+/vendor/bundle
+
+# SQLite databases
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
+
+# Logs
+/log/*
+!/log/.keep
+
+# Temp files
+/tmp/*
+!/tmp/.keep
+
+# Bootsnap cache
+/tmp/cache/bootsnap*
+
+# Uploaded files
+/storage/*
+!/storage/.keep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Node
+node_modules/

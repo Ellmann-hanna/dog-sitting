@@ -1,0 +1,5 @@
+{
+  "name": "Meme Machine",
+  "description": "An AI-powered meme generator that analyzes your photos to create viral-worthy memes with distinct personas (Relatable, Roast, Absurdist).",
+  "requestFramePermissions": []
+}

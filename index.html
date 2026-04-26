@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Danville Doggy Boarding & Care — Danville, CA</title>
+    <meta name="description" content="Premium in-home dog boarding in Danville, California. Up to 3 dogs, 3 daily walks, cozy overnight stays in a real single-family home." />
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans:    ['Nunito', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              display: ['"Playfair Display"', 'Georgia', 'serif'],
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      html { scroll-behavior: smooth; }
+      * { box-sizing: border-box; }
+    </style>
+
+    <!-- Import map for browser-native ESM (AI Studio / CDN fallback) -->
+    <script type="importmap">
+{
+  "imports": {
+    "react/":        "https://aistudiocdn.com/react@^19.2.0/",
+    "react":         "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/":    "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "lucide-react":  "https://aistudiocdn.com/lucide-react@^0.554.0"
+  }
+}
+    </script>
+  </head>
+  <body class="bg-white text-stone-900 min-h-screen antialiased">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
